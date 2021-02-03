@@ -1,0 +1,416 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    line-height: 1.5;
+}
+
+ul {
+    list-style: none;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+img {
+    width: 100%;
+    display: block;
+}
+
+input,
+button {
+    border: none;
+    outline: none;
+}
+
+.fl {
+    float: left;
+}
+
+.fr {
+    float: right;
+}
+
+.clearfix:before,
+.clearfix:after {
+    content: "";
+    display: table;
+}
+
+.clearfix:after {
+    clear: both;
+}
+
+.clearfix {
+    *zoom: 1;
+}
+
+.border {
+    border: 2px solid rgb(77, 113, 212) !important;
+}
+
+.el-tabs__item {
+    color: #303133;
+}
+
+.empty {
+    width: 100%;
+    height: 100%;
+    line-height: 100%;
+    text-align: center;
+
+    h3 {
+        color: #303133;
+    }
+}
+
+@headerWidth: 100vw;
+@headerHeight: 20px;
+@headerFontSize: 3.5vw;
+@msgTitleSize: 16px;
+
+body {
+
+    #app {
+        width: 100vw;
+        min-height: 100vh;
+        background-image: url(../images/talk_bg.png);
+        background-size: cover;
+        background-position: 100% 100%;
+        background-repeat: no-repeat;
+
+        header {
+            .viewport_login_head {
+                width: @headerWidth;
+                text-align: center;
+                padding: @headerHeight 0;
+
+                h1 {
+                    font-size: @headerFontSize;
+                    color: rgb(0, 0, 0);
+
+                    @media (min-width:1280px) {
+                        font-size: 45px;
+                    }
+
+                    @media (max-width:1280px) {
+                        font-size: 45px;
+                    }
+                }
+            }
+
+            .viewport_system_head {
+                width: @headerWidth;
+                text-align: center;
+                padding: @headerHeight 0;
+
+                h1 {
+                    font-size: @headerFontSize;
+                    color: rgb(5, 5, 5);
+
+                    @media (min-width:1280px) {
+                        font-size: 45px;
+                    }
+
+                    @media (max-width:1280px) {
+                        font-size: 45px;
+                    }
+                }
+            }
+        }
+
+        main {
+            @SearchBoxRadius: 30px;
+
+            .btnGroup {
+                width: 80vw;
+                margin: 0 auto;
+                text-align: right;
+            }
+
+            .viewport_login_msg {
+                width: 100vw;
+                height: calc(90vh - (40px + 3.5vw));
+
+                @media (min-width:1280px) {
+                    height: calc(90vh - (40px + 45px));
+                }
+
+                @media (max-width:1280px) {
+                    height: calc(90vh - (40px + 45px));
+                }
+
+                .animate__animated.animate__fadeInDown {
+                    --animate-duration: 1.5s;
+                }
+
+                .login_msg:last-child {
+                    margin-bottom: 0px;
+                }
+
+                .login_msg {
+                    width: 40vw;
+                    min-height: 345px;
+                    min-width: 390px;
+                    height: 30vw;
+                    margin: 40px auto;
+                    text-align: center;
+                    border-radius: 50px;
+                    background: #e9e9e9;
+                    box-shadow: 20px 20px 60px #c6c6c6,
+                        -20px -20px 60px #ffffff;
+                    padding: 8vw 0;
+
+                    @media (min-width:1280px) {
+                        width: 512px;
+                        height: 384px;
+                    }
+
+                    .msgBox {
+                        width: 80%;
+                        margin: 0 auto;
+                        margin-bottom: 40px;
+
+                        .msgBoxName {
+                            width: 55px;
+                            line-height: 40px;
+                            font-size: @msgTitleSize;
+                            padding: @msgTitleSize/2 0;
+                            text-align: center;
+                            color: rgb(0, 0, 0);
+                        }
+
+                        .msgBoxContent {
+                            width: 80%;
+
+                            .el-input {
+                                .el-input__inner {
+                                    background-color: rgb(231, 231, 231);
+                                }
+                            }
+
+                            .el-select {
+                                width: 100%;
+
+                                .el-input {
+                                    width: 100%;
+                                }
+                            }
+                        }
+                    }
+
+                    .btn {
+                        margin-top: 15px;
+                    }
+                }
+            }
+
+            .viewport_search_city {
+                position: sticky;
+                top: -50px;
+                width: 100vw;
+                padding: 60px 0;
+                z-index: 99;
+
+                .search_city {
+                    width: 70%;
+                    margin: 0 auto;
+                    box-shadow: 0;
+                    border: 1px solid #dfe1e5;
+                    overflow: hidden;
+                    border-top-left-radius: @SearchBoxRadius;
+                    border-bottom-left-radius: @SearchBoxRadius;
+                    border-top-right-radius: @SearchBoxRadius;
+                    border-bottom-right-radius: @SearchBoxRadius;
+
+                    .el-autocomplete {
+                        width: 100%;
+
+                        .el-input {
+                            width: 70vw;
+
+                            .el-input__inner,
+                            .el-input-group__append {
+                                border: 0;
+                            }
+
+                            .el-input__inner {
+                                background-color: #fff;
+                            }
+
+                            .el-button {
+                                width: 70px;
+                            }
+                        }
+                    }
+                }
+
+                .search_city:hover {
+                    box-shadow: 0 1px 6px 0 rgba(32, 33, 36, 0.28);
+                    border-color: rgba(223, 225, 229, 0);
+                }
+            }
+
+            .viewport_before_search_city_msg {
+                width: 100vw;
+
+                .city_msg_nav {
+                    width: 80vw;
+                    margin: 0 auto;
+                    margin-top: 7vh;
+
+                    .tabContent {
+                        width: 100%;
+
+                        @imgBoxHeight: 77%;
+
+                        .city_img {
+                            width: 100%;
+                            height: @imgBoxHeight;
+                            padding: 10px;
+
+                            .content::-webkit-scrollbar {
+                                display: none;
+                                /* Chrome Safari */
+                            }
+
+                            .content {
+                                width: 100%;
+                                height: 515px;
+                                overflow: scroll;
+                                scrollbar-width: none;
+                                -ms-overflow-style: none;
+
+                                .el-form {
+                                    .el-select {
+                                        width: 50%;
+
+                                        .el-input {
+                                            width: 100%;
+                                        }
+                                    }
+                                }
+
+
+                                ul {
+                                    .item_img {
+                                        display: none;
+                                        width: 140px;
+                                        height: 140px;
+                                        background-color: #fff;
+                                        margin: 0px 23px;
+                                        padding: 5px;
+                                        border: 1px solid #dfe1e5;
+
+                                        img {
+                                            display: block;
+                                            height: 130px;
+                                        }
+                                    }
+                                }
+                            }
+
+
+                            .bigItem {
+                                display: none;
+                                width: 70%;
+                                height: 358px;
+                                background-color: #fff;
+                                margin: 0 15%;
+                                margin-top: 20px;
+                                border: 1px solid #dfe1e5;
+                                padding: 3px;
+
+                                img {
+                                    height: 350px;
+                                }
+                            }
+                        }
+
+                        .city_msg {
+                            width: 30%;
+                            height: @imgBoxHeight;
+                            padding: 10px;
+                            border-left: 2px solid #dfe1e5;
+
+                            .imgCityMsg {
+                                margin: 20px 0;
+                                display: flex;
+                                flex-direction: row;
+                                justify-content: flex-start;
+                                height: 60px;
+                                line-height: 60px;
+
+                                .text {
+                                    flex: 1;
+                                    text-align: left;
+                                    color: #fff;
+                                }
+
+                                .num {
+                                    flex: 1;
+                                    text-align: center;
+                                    font-size: 2rem;
+                                    color: rgb(0, 174, 255);
+                                    border-bottom: 3px solid #dfe1e5;
+
+                                    span {
+                                        font-size: 3rem;
+                                        font-weight: 700;
+                                        color: #aaa;
+                                    }
+                                }
+                            }
+                        }
+
+                        .uploadImg {
+                            display: none;
+                            width: 100%;
+                            height: calc(100% - @imgBoxHeight);
+                            margin-top: 55px;
+
+                            input {
+                                margin-right: 15px;
+                                margin-bottom: 10px;
+                            }
+                        }
+                    }
+
+                    .imgCityMsg {
+                        margin: 20px 0;
+                        display: flex;
+                        flex-direction: row;
+                        justify-content: flex-start;
+                        height: 60px;
+                        line-height: 60px;
+
+                        .text {
+                            flex: 1;
+                            text-align: center;
+                            color: #fff;
+                        }
+
+                        .num {
+                            flex: 2;
+                            text-align: center;
+                            font-size: 2rem;
+                            color: rgb(0, 174, 255);
+                            border-bottom: 3px solid #dfe1e5;
+
+                            span {
+                                font-size: 3rem;
+                                font-weight: 700;
+                                color: #aaa;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

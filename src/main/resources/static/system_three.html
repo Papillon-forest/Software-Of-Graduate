@@ -1,0 +1,1351 @@
+<!DOCTYPE html>
+<html lang="zn-CH">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="./css/animate.min.css" />
+    <link rel="stylesheet" href="./css/element.css" />
+    <link rel="stylesheet" href="./css/style.css" />
+    <title>系统后台</title>
+  </head>
+
+  <body>
+    <div
+      id="app"
+      v-loading="searchNewCity"
+      element-loading-text="正在加载中..."
+      element-loading-background="rgba(255, 255, 255, 0.9)"
+    >
+      <header>
+        <system-head></system-head>
+      </header>
+      <main>
+        <search-city
+          v-if="false"
+          @sand-selected-city="searchCity"
+        ></search-city>
+        <city-msg v-if="subjectHead"> </city-msg>
+        <!-- 研究生后台 -->
+        <div
+          v-if="graduate_show"
+          class="viewport_before_search_city_msg animate__animated animate__fadeInUp"
+        >
+          <div class="city_msg_nav">
+            <el-tabs
+              tab-position="left"
+              @tab-click="handle"
+              style="height: 515px"
+            >
+              <el-tab-pane label="添加申请">
+                <div class="tabContent clearfix">
+                  <div class="city_img fl clearfix">
+                    <div class="content fl">
+                      <el-form ref="form_1" :model="form_1" label-width="100px">
+                        <el-form-item label="学术报告ID">
+                          <el-input v-model="form_1.xrId"></el-input>
+                        </el-form-item>
+                        <el-form-item label="参会证明">
+                          <template>
+                            <el-upload
+                              class="upload-demo"
+                              action=""
+                              :on-preview="handlePreview"
+                              :on-change="handleChange"
+                              :http-request="handleFile"
+                              :on-remove="handleRemove"
+                              :before-remove="beforeRemove"
+                              multiple
+                              :limit="1"
+                              :on-exceed="handleExceed"
+                              :file-list="fileList"
+                            >
+                              <el-button size="small" type="primary"
+                                >点击上传</el-button
+                              >
+                              <div slot="tip" class="el-upload__tip">
+                                只能上传jpg/png文件，且不超过500kb
+                              </div>
+                            </el-upload>
+                          </template>
+                        </el-form-item>
+                        <el-form-item label="报告中文名称">
+                          <el-input v-model="form_1.xrChina"></el-input>
+                        </el-form-item>
+                        <el-form-item label="报告英文名称">
+                          <el-input v-model="form_1.xrEnglish"></el-input>
+                        </el-form-item>
+                        <el-form-item label="备注">
+                          <el-input v-model="form_1.xrRemark"></el-input>
+                        </el-form-item>
+                        <el-form-item label="导师ID">
+                          <el-input v-model="form_1.ttId"></el-input>
+                        </el-form-item>
+                        <el-form-item label="学术交流名称">
+                          <el-input v-model="form_1.xeName"></el-input>
+                        </el-form-item>
+                        <el-form-item label="活动国家">
+                          <el-input v-model="form_1.xeCountry"></el-input>
+                        </el-form-item>
+                        <el-form-item label="活动时间">
+                          <el-input v-model="form_1.xeTime"></el-input>
+                        </el-form-item>
+                        <el-form-item>
+                          <el-button
+                            type="primary"
+                            ref="subMsg"
+                            @click="clickNumup()"
+                            >立即添加</el-button
+                          >
+                        </el-form-item>
+                      </el-form>
+                    </div>
+                  </div>
+                </div>
+              </el-tab-pane>
+              <el-tab-pane label="查看申请">
+                <div class="tabContent clearfix">
+                  <div class="city_img fl clearfix">
+                    <div class="content fl">
+                      <el-table :data="seeApply">
+                        <el-table-column
+                          property="xrId"
+                          width="100"
+                          label="学术报告ID"
+                        >
+                        </el-table-column>
+                        <el-table-column property="xrProve" label="参会证明">
+                            <template slot-scope="scope">
+                              <a :href="'../xsReport/download?xrId='+ scope.row.xrId" v-text="scope.row.xrProve"></a>
+                              </template>
+                          </el-table-column>
+                        <el-table-column
+                          property="xrChina"
+                          label="报告中文名称"
+                        >
+                        </el-table-column>
+                        <el-table-column
+                          property="xrEnglish"
+                          label="报告英文名称"
+                        >
+                        </el-table-column>
+                        <el-table-column property="ttId" label="导师ID">
+                        </el-table-column>
+                        <el-table-column property="xeName" label="学术交流名称">
+                        </el-table-column>
+                        <el-table-column fixed="right" label="操作" width="50">
+                          <template slot-scope="scope">
+                            
+                            <el-popover ref="popover6" placement="top">
+                              <el-table
+                                :data="viewMsg"
+                                border
+                                style="width: 100%"
+                              >
+                              <el-table-column property="xrRemark" label="备注">
+                            </el-table-column>
+                            <el-table-column property="xeCountry" label="活动国家">
+                            </el-table-column>
+                            <el-table-column property="xeTime" label="活动时间">
+                            </el-table-column>
+                              </el-table>
+                            </el-popover>
+                            <el-button
+                              v-popover:popover6
+                              @click="view(scope.row)"
+                              type="text"
+                              size="small"
+                              >查看</el-button
+                            >
+                            
+                          </template>
+                        </el-table-column>
+                      </el-table>
+                    </div>
+                  </div>
+                </div>
+              </el-tab-pane>
+              
+            </el-tabs>
+          </div>
+        </div>
+      </main>
+      <footer></footer>
+    </div>
+
+    <script src="./js/vue.js"></script>
+    <script src="./js/element-ui.js"></script>
+    <script src="./js/axios.min.js"></script>
+    <script>
+      let systemHead = {
+        template: `
+                      <div class="viewport_system_head">
+                          <h1 v-text="title" class="animate__animated animate__fadeInDown">研究生学术交流信息管理后台</h1>
+                      </div>
+                      `,
+        data() {
+          return {
+            title: "",
+          };
+        },
+        mounted() {
+          _that = this;
+          _that.welcomeTip();
+        },
+        mounted() {
+          this.getTitle();
+          let request = new Object();
+          request = this.getTitle();
+          let identity = request["identity"];
+          if (identity == 1) {
+            this.title = "研究生学术交流信息管理后台";
+          }
+        },
+        methods: {
+          getTitle() {
+            let url = location.search;
+            let theRequest = new Object();
+            if (url.indexOf("?") != -1) {
+              let str = url.substr(1);
+              strs = str.split("&");
+              for (let i = 0; i < strs.length; i++) {
+                theRequest[strs[i].split("=")[0]] = unescape(
+                  strs[i].split("=")[1]
+                );
+              }
+            }
+            return theRequest;
+          },
+          welcomeTip() {
+            this.$notify({
+              title: "欢迎登陆系统！",
+              message: "",
+              type: "success",
+              showClose: false,
+              duration: 2000,
+            });
+          },
+        },
+      };
+
+      let searchCity = {
+        template: `
+                          <div class="viewport_search_city">
+                              <div class="search_city animate__animated animate__fadeInUp">
+                                  <el-autocomplete
+                                   placeholder="请选择城市"
+                                   v-model="cityName"
+                                   :fetch-suggestions="querySearch"
+                                   @select="handleSelect"
+                                   class="inline-input">
+                                      <el-button slot="append" icon="el-icon-search" @click="searchThisCity"></el-button>
+                                  </el-autocomplete>
+                              </div>
+                          </div>
+                      `,
+        data() {
+          return {
+            restaurants: [],
+            cityName: "",
+          };
+        },
+        watch: {},
+        mounted() {
+          _that = this;
+          _that.loadAll();
+          // _that.restaurants = _that.loadAll();
+        },
+        methods: {
+          loadAll() {
+            axios
+              .get("http://121.43.126.152:8090//city/api/getCityNames")
+              .then((res) => {
+                _that.restaurants = res.data.objects;
+              });
+          },
+          searchThisCity() {
+            if (_that.cityName === "") {
+              this.$message.error("请先选择城市");
+            } else {
+              _that.$emit("sand-selected-city", _that.cityName);
+            }
+          },
+          querySearch(queryString, cb) {
+            let restaurants = _that.restaurants;
+            let results = queryString
+              ? restaurants.filter(_that.createFilter(queryString))
+              : restaurants;
+            // 调用 callback 返回建议列表的数据
+            cb(results);
+          },
+          createFilter(queryString) {
+            return (restaurant) => {
+              return (
+                restaurant.value
+                  .toLowerCase()
+                  .indexOf(queryString.toLowerCase()) === 0
+              );
+            };
+          },
+          handleSelect(item) {},
+        },
+      };
+
+      let cityMsg = {
+        template: `
+                          <div class="viewport_before_search_city_msg animate__animated animate__fadeInUp">
+                              <div class="city_msg_nav">
+                                  <el-tabs tab-position="left" style="height: 515px;">
+                                      <el-tab-pane label="添加课程信息">
+                                          <div class="tabContent clearfix">
+                                              <div class="city_img fl clearfix">
+                                                  <div class="content fl">
+                                                      <ul style="display: none;">
+                                                          <li :class=" thisLi == index ? 'item_img border fl' : 'item_img fl'" @click="getImg(index)" v-for="(img,index) of imgList" :key="index">
+                                                              <img ref="imgItem" :src="img" alt="">
+                                                          </li>
+                                                      </ul>
+
+                                                  <el-form ref="form" :model="form" label-width="100px">
+                                                  <el-form-item label="课程ID">
+                                                      <el-input v-model="form.cId"></el-input>
+                                                      </el-form-item>
+                                                  <el-form-item label="课程名称">
+                                                      <el-input v-model="form.cName"></el-input>
+                                                      </el-form-item>
+                                                  <el-form-item label="课程编号">
+                                                      <el-input v-model="form.cNum"></el-input>
+                                                      </el-form-item>
+                                                  <el-form-item label="授课时间">
+                                                      <el-input v-model="form.cTime"></el-input>
+                                                      </el-form-item>
+                                                  <el-form-item label="开设学期">
+                                                      <el-input v-model="form.cTerm"></el-input>
+                                                      </el-form-item>
+                                                  <el-form-item label="课程性质">
+                                                      <el-input v-model="form.cType"></el-input>
+                                                      </el-form-item>
+                                                  <el-form-item label="授课对象">
+                                                      <el-input v-model="form.cObj"></el-input>
+                                                      </el-form-item>
+                                                  <el-form-item label="授课人数">
+                                                      <el-input v-model="form.cPop"></el-input>
+                                                      </el-form-item>
+                                                  <el-form-item label="开设年份">
+                                                      <el-input v-model="form.cYear"></el-input>
+                                                      </el-form-item>
+                                                  <el-form-item label="志愿人数">
+                                                      <el-input v-model="form.cNums"></el-input>
+                                                      </el-form-item>
+                                                  <el-form-item label="项目资金">
+                                                      <el-input v-model="form.cMoney"></el-input>
+                                                      </el-form-item>
+                                                  <el-form-item label="学术交流次数">
+                                                      <el-input v-model="form.cCount"></el-input>
+                                                      </el-form-item>
+                                                      <el-form-item>
+              <el-button type="primary" ref="subMsg" @click="clickNumup()">立即添加</el-button>
+              </el-form-item></el-form>
+
+
+                                                      </div>
+                                                      <div class="bigItem fl" v-if="isShow">
+                                                          <img :src="img" alt="">
+                                                      </div>
+                                              </div>
+
+                                              <div v-if="ifShowDele_1" style="margin-bottom: 10px;width: 100%;display: none;">
+                                                  <el-button type="primary" @click="delet_1" size="small">删除</el-button>
+                                              </div>
+                                              <div class="uploadImg fl">
+                                                  <el-upload class="upload-demo" action="http://121.43.126.152:8090/city/api/uploadFile"
+                      :on-preview="handlePreview" :on-remove="handleRemove" :before-remove="beforeRemove" multiple :limit="3"
+                      :on-exceed="handleExceed" :on-success="success" :file-list="fileList" >
+                      <el-button size="small" type="primary">点击上传</el-button>
+                      <div slot="tip" class="el-upload__tip">只能上传3张jpg/png文件，且不超过10MB</div>
+                  </el-upload>
+                                              </div>
+                                          </div>
+                                      </el-tab-pane>
+                                      <el-tab-pane label="审核申请">
+                                          <div class="tabContent clearfix">
+                                              <div class="city_img fl clearfix">
+                                                  <div class="content fl">
+                                                    <el-table :data="ApplyList" border style="width: 100%">
+                        <el-table-column fixed prop="sId" label="研究生ID">
+                        </el-table-column>
+                        </el-table-column>
+                        <el-table-column prop="cId" label="课程ID">
+                        </el-table-column>
+                        <el-table-column prop="sendTime" label="申报时间">
+                        </el-table-column>
+                        <el-table-column prop="sendId" label="审核状态码" width="150">
+                          <template slot-scope="scope">
+                            <span v-if="scope.row.sendId == 1 ? true : false"
+                              >通过</span
+                            >
+                            <span v-if="scope.row.sendId == 2 ? true : false"
+                              >等待学科负责人通过</span
+                            >
+                            <span v-if="scope.row.sendId == 3 ? true : false"
+                              >申请中</span
+                            >
+                          </template>
+                        </el-table-column>
+                        <el-table-column prop="tId" label="教师ID">
+                        </el-table-column>
+                        <el-table-column fixed="right" label="操作" width="50">
+                          <template slot-scope="scope">
+                            <el-popover
+                                              ref="popover3"
+                                              placement="top"
+                                              title="查看"
+                                              trigger="click"
+                                              >
+                                              <el-table :data="watchItem">
+              <el-table-column  property="fId" width="100" label="终选ID">
+                <template slot-scope="scope">
+                <el-input v-model="scope.row.fId" placeholder="请输入内容"></el-input>
+              </template>
+              </el-table-column>
+              <el-table-column v-if="false" property="fResult" width="100" label="审核结果">
+                <template slot-scope="scope">
+                <el-input v-model="scope.row.fResult" placeholder="请输入内容"></el-input></template></el-table-column>
+              <el-table-column  property="fTime" width="100" label="审核时间">
+                <template slot-scope="scope">
+                <el-input v-model="scope.row.fTime" placeholder="请输入内容"></el-input></template></el-table-column>
+              <el-table-column  property="sId" label="研究生ID"></el-table-column>
+              <el-table-column  property="tId" label="教师ID"></el-table-column>
+              <el-table-column fixed="right" label="操作" width="50">
+                <template slot-scope="scope">
+                  <el-button
+                              @click="surePass(scope.row)"
+                              type="text"
+                              size="small"
+                              >通过</el-button
+                            >
+                </template>
+              </el-table-column>
+            </el-table>
+                                            </el-popover>
+                            <el-button
+                              @click="applyForReview(scope.row)"
+                              type="text"
+                              size="small"
+                              v-popover:popover3
+                              >查看</el-button
+                            >
+                          </template>
+                        </el-table-column>
+                      </el-table>
+                                              </div>
+                                          </div>
+                                        </div>
+                                      </el-tab-pane>
+                                      <el-tab-pane label="课程展示">
+                                        <el-table
+                                        :data="courseList"
+                                        border
+                                        style="width: 100%">
+                                        <el-table-column
+                                          fixed
+                                          prop="cId"
+                                          label="课程ID"
+                                          >
+                                        </el-table-column>
+                                        <el-table-column
+                                          fixed
+                                          prop="cName"
+                                          label="课程名称"
+                                          >
+                                        </el-table-column>
+                                        <el-table-column
+                                          fixed
+                                          prop="cNum"
+                                          label="课程编号"
+                                          >
+                                        </el-table-column>
+                                        <el-table-column
+                                          fixed
+                                          prop="cNum"
+                                          label="授课时间"
+                                          >
+                                        </el-table-column>
+                                        <el-table-column
+                                          fixed
+                                          prop="cMoney"
+                                          label="项目资金"
+                                          >
+                                        </el-table-column>
+
+                                        <el-table-column
+                                          fixed="right"
+                                          label="操作"
+                                          width="50">
+                                          <template slot-scope="scope">
+                                            <el-popover
+                                              ref="popover2"
+                                              placement="top"
+                                              title="查看"
+                                              trigger="click"
+                                              >
+                                              <el-table :data="watchForm">
+              <el-table-column  property="cTerm" label="开设学期"></el-table-column>
+              <el-table-column  property="cType" label="课程性质"></el-table-column>
+              <el-table-column  property="cObj" label="授课对象"></el-table-column>
+              <el-table-column  property="cPop" label="授课人数"></el-table-column>
+              <el-table-column  property="cYear" label="开设年份"></el-table-column>
+              <el-table-column  property="cNums" label="志愿人数"></el-table-column>
+              <el-table-column  property="cCount" label="学术交流次数"></el-table-column>
+            </el-table>
+                                            </el-popover>
+                                            <el-button @click="handleClick(scope.row)" type="text"                              size="small" v-popover:popover2>查看</el-button>
+                                          </template>
+                                        </el-table-column>
+                                      </el-table>
+                                      </el-tab-pane>
+                                      <el-tab-pane label="助教信息">
+                                        <el-table
+    :data="viewMsg"
+    border
+    style="width: 100%">
+    <el-table-column
+      fixed
+      prop="fId"
+      label="终选ID">
+    </el-table-column>
+    <el-table-column
+      prop="fResult"
+      label="审核结果"
+      >
+    </el-table-column>
+    <el-table-column
+    prop="fTime"
+    label="审核时间"
+    >
+  </el-table-column>
+    <el-table-column
+    prop="sId"
+    label="研究生ID"
+    >
+  </el-table-column>
+  <el-table-column
+    prop="workText"
+    label="跟进内容"
+    >
+  </el-table-column>
+  <el-table-column
+    prop="tId"
+    label="教师ID"
+    >
+  </el-table-column>
+  <el-table-column
+    prop="reviewResult"
+    label="评价结果"
+    >
+  </el-table-column>
+  <el-table-column
+    prop="reviewSuggestion"
+    label="评价意见"
+    >
+  </el-table-column>
+  </el-table>
+                                      </el-tab-pane>
+                                      <el-tab-pane label="分类数据占比">
+
+                                      </el-tab-pane>
+                                  </el-tabs>
+                              </div>
+                          </div>
+                      `,
+        props: [
+          "imgList",
+          "img",
+          "imgListClass",
+          "img_2",
+          "isShowClass",
+          "isShow",
+          "ifShowDele_1",
+          "ifShowDele_2",
+        ],
+        data() {
+          return {
+            ApplyList: [],
+            form: {
+              cId: "",
+              cName: "",
+              cNum: "",
+              cTime: "",
+              cTerm: "",
+              cType: "",
+              cObj: "",
+              cPop: "",
+              cYear: "",
+              cNums: "",
+              cMoney: "",
+              cCount: "",
+            },
+            watchItem: [],
+            watchForm: [],
+            clickNum: {
+              num: 0,
+              timer: null,
+            },
+            viewMsg: [],
+            courseList: [],
+            fileList: [],
+            fileList_1: [],
+            thisLi_1: -1,
+            thisLi: -1,
+            imgArr: [],
+            imgArr_1: [],
+          };
+        },
+        watch: {
+          "clickNum.num": {
+            handler(val) {
+              if (this.timer) {
+                clearTimeout(this.timer);
+              }
+              this.timer = setTimeout(() => {
+                this.sureSubmitForm();
+              }, 1000);
+            },
+            deep: true,
+          },
+        },
+        mounted() {
+          this.getCourseList();
+          this.getApplyList();
+          this.getFindsList();
+        },
+        methods: {
+          getFindsList() {
+            axios
+              .post("../subjectHead/findsList")
+              .then((res) => {
+                this.viewMsg = res.data;
+              });
+          },
+          surePass(row) {
+            console.log(row);
+            let info = {
+              fId: row.fId,
+              fResult: "99",
+              // fResult:row.fResult,
+              fTime: row.fTime,
+              sId: row.sId,
+              tId: row.tId,
+              vId: row.vId,
+            };
+            axios({
+              method: "post",
+              url: "../subjectHead/updateVolInfo",
+              headers: { "content-type": "application/json" },
+              data: JSON.stringify(info),
+            })
+              .then((res) => {
+                console.log(res);
+                this.$message({
+                  message: "提交成功",
+                  type: "success",
+                });
+                this.getApplyList();
+              })
+              .catch((err) => {
+                this.$message.error("失败" + err);
+              });
+          },
+          getApplyList() {
+            let param = new URLSearchParams();
+            param.append("tId", 3);
+            axios
+              .post("../instructor/select", param)
+              .then((res) => {
+                console.log(res.data.object);
+                this.ApplyList = res.data.object;
+              })
+              .catch((err) => {
+                this.$message.error("获取信息失败");
+              });
+          },
+          applyForReview(row) {
+            console.log(row);
+            let thisRow = new Object();
+            thisRow.fId = "";
+            thisRow.fResult = "";
+            thisRow.fTime = "";
+            let obj = Object.assign(thisRow, row);
+            this.watchItem[0] = obj;
+          },
+          clickNumup() {
+            this.clickNum.num++;
+          },
+          handleClick(row) {
+            this.watchForm[0] = row;
+            console.log(row);
+            console.log(this.watchForm);
+          },
+          getCourseList() {
+            axios
+              .get("../subjectHead/findList")
+              .then((res) => {
+                this.courseList = res.data;
+              });
+          },
+          sureSubmitForm() {
+            this.clickNum.num++;
+            console.log(1);
+            if (
+              this.form.cId == "" ||
+              this.form.cName == "" ||
+              this.form.cNum == "" ||
+              this.form.cTime == "" ||
+              this.form.cTerm == "" ||
+              this.form.cType == "" ||
+              this.form.cObj == "" ||
+              this.form.cPop == "" ||
+              this.form.cYear == "" ||
+              this.form.cNums == "" ||
+              this.form.cMoney == "" ||
+              this.form.cCount == ""
+            ) {
+              this.$message.error("请检查输入是否有为空");
+            } else {
+              let cos = {
+                cId: this.form.cId,
+                cName: this.form.cName,
+                cNum: this.form.cNum,
+                cTime: this.form.cTime,
+                cTerm: this.form.cTerm,
+                cType: this.form.cType,
+                cObj: this.form.cObj,
+                cPop: this.form.cPop,
+                cYear: this.form.cYear,
+                cNums: this.form.cNums,
+                cMoney: this.form.cMoney,
+                cCount: this.form.cCount,
+              };
+              axios({
+                method: "post",
+                url: "../subjectHead/save",
+                headers: { "content-type": "application/json" },
+                data: JSON.stringify(cos),
+              })
+                .then((res) => {
+                  if (res.data.start == 200) {
+                    this.$message({
+                      message: "提交成功",
+                      type: "success",
+                    });
+                    this.getCourseList();
+                    (this.form.cId = ""),
+                      (this.form.cName = ""),
+                      (this.form.cNum = ""),
+                      (this.form.cTime = ""),
+                      (this.form.cTerm = ""),
+                      (this.form.cType = ""),
+                      (this.form.cObj = ""),
+                      (this.form.cPop = ""),
+                      (this.form.cYear = ""),
+                      (this.form.cNums = ""),
+                      (this.form.cMoney = ""),
+                      (this.form.cCount = "");
+                  } else {
+                    this.$message.error("提交失败！" + err.data);
+                  }
+                })
+                .catch((err) => {
+                  this.$message.error("提交失败！" + err.data);
+                });
+            }
+          },
+          delet_1() {
+            this.$emit("sand-delet-img", 1);
+          },
+          delet_2() {
+            this.$emit("sand-delet-img-class", 2);
+          },
+          handleRemove(file, fileList) {
+            // console.log(file, fileList);
+          },
+          handlePreview(file) {
+            // console.log(file);
+          },
+          handleExceed(files, fileList) {
+            this.$message.warning(
+              `当前限制选择 3 个文件，本次选择了 ${
+                files.length
+              } 个文件，共选择了 ${files.length + fileList.length} 个文件`
+            );
+          },
+          beforeRemove(file, fileList) {
+            var testmsg = file.name.substring(file.name.lastIndexOf(".") + 1);
+            const extension = testmsg === "jpg";
+            const extension2 = testmsg === "png";
+            const isLt2M = file.size / 1024 / 1024 < 10; //这里做文件大小限制
+            if (!extension && !extension2) {
+              this.$message({
+                message: "上传文件只能是 jpg、png格式!",
+                type: "warning",
+              });
+            }
+            if (!isLt2M) {
+              this.$message({
+                message: "上传文件大小不能超过 10MB!",
+                type: "warning",
+              });
+            }
+            return extension || (extension2 && isLt2M);
+          },
+          success(response, file, fileList) {
+            this.imgArr.push(response.objects[0]);
+
+            if (this.imgArr.length === 3) {
+              this.$emit("sand-img-file", this.imgArr);
+            }
+          },
+          handleRemove_1(file, fileList) {
+            // console.log(file, fileList);
+          },
+          handlePreview_1(file) {
+            // console.log(file);
+          },
+          handleExceed_1(files, fileList) {
+            this.$message.warning(
+              `当前限制选择 3 个文件，本次选择了 ${
+                files.length
+              } 个文件，共选择了 ${files.length + fileList.length} 个文件`
+            );
+          },
+          beforeRemove_1(file, fileList) {
+            var testmsg = file.name.substring(file.name.lastIndexOf(".") + 1);
+            const extension = testmsg === "jpg";
+            const extension2 = testmsg === "png";
+            const isLt2M = file.size / 1024 / 1024 < 10; //这里做文件大小限制
+            if (!extension && !extension2) {
+              this.$message({
+                message: "上传文件只能是 jpg、png格式!",
+                type: "warning",
+              });
+            }
+            if (!isLt2M) {
+              this.$message({
+                message: "上传文件大小不能超过 10MB!",
+                type: "warning",
+              });
+            }
+            return extension || (extension2 && isLt2M);
+          },
+          success_1(response, file, fileList) {
+            this.imgArr_1.push(response.objects[0]);
+
+            if (this.imgArr_1.length === 3) {
+              this.$emit("sand-img-file-class", this.imgArr_1);
+            }
+          },
+          submitUpload() {
+            this.$emit("sand-img-file", this.fileList);
+          },
+          getImg(index) {
+            this.thisLi = index;
+            this.$emit("sand-src", this.$refs.imgItem[index].src);
+          },
+          getImg_1(index) {
+            this.thisLi_1 = index;
+            this.$emit("sand-src-class", this.$refs.imgItem_1[index].src);
+          },
+        },
+      };
+
+      let graduate = {
+        template: `
+              <div class="viewport_before_search_city_msg animate__animated animate__fadeInUp">
+                <div class="city_msg_nav">
+                    <el-tabs tab-position="left" style="height: 515px;">
+                        <el-tab-pane label="添加课程信息">
+                            <div class="tabContent clearfix">
+                                <div class="city_img fl clearfix">
+                                    <div class="content fl">
+
+                                    </div>
+                                </div>
+                            </div>
+                        </el-tab-pane>
+                        <el-tab-pane label="审核申请">
+                            <div class="tabContent clearfix">
+                                <div class="city_img fl clearfix">
+                                    <div class="content fl">
+
+                                    </div>
+                                  </div>
+                            </div>
+                        </el-tab-pane>
+                        <el-tab-pane label="课程展示">
+                          <el-table
+                          :data="courseList"
+                          border
+                          style="width: 100%">
+                          <el-table-column
+                            fixed
+                            prop="cId"
+                            label="课程ID"
+                            >
+                          </el-table-column>
+                          <el-table-column
+                            fixed
+                            prop="cName"
+                            label="课程名称"
+                            >
+                          </el-table-column>
+                          <el-table-column
+                            fixed
+                            prop="cNum"
+                            label="课程编号"
+                            >
+                          </el-table-column>
+                          <el-table-column
+                            fixed
+                            prop="cNum"
+                            label="授课时间"
+                            >
+                          </el-table-column>
+                          <el-table-column
+                            fixed
+                            prop="cMoney"
+                            label="项目资金"
+                            >
+                          </el-table-column>
+
+                          <el-table-column
+                            fixed="right"
+                            label="操作"
+                            width="50">
+                            <template slot-scope="scope">
+                              <el-popover
+                                ref="popover2"
+                                placement="top"
+                                title="查看"
+                                trigger="click"
+                                >
+                                <el-table :data="watchForm">
+      <el-table-column  property="cTerm" label="开设学期"></el-table-column>
+      <el-table-column  property="cType" label="课程性质"></el-table-column>
+      <el-table-column  property="cObj" label="授课对象"></el-table-column>
+      <el-table-column  property="cPop" label="授课人数"></el-table-column>
+      <el-table-column  property="cYear" label="开设年份"></el-table-column>
+      <el-table-column  property="cNums" label="志愿人数"></el-table-column>
+      <el-table-column  property="cCount" label="学术交流次数"></el-table-column>
+      </el-table>
+                              </el-popover>
+                              <el-button @click="handleClick(scope.row)" type="text"                              size="small" v-popover:popover2>查看</el-button>
+                            </template>
+                          </el-table-column>
+                        </el-table>
+                        </el-tab-pane>
+                        <el-tab-pane label="分类数据占比">
+
+                        </el-tab-pane>
+                        <el-tab-pane label="分类数据占比">
+
+                        </el-tab-pane>
+                    </el-tabs>
+                </div>
+            </div>
+              `,
+      };
+
+      const app = new Vue({
+        el: "#app",
+        data: {
+          text: "",
+          form_1: {
+            xrId: "",
+            xrProve: "",
+            xrChina: "",
+            xrEnglish: "",
+            xrRemark: "",
+            ttId: "",
+            xeName: "",
+            xeCountry: "",
+            xeTime: "",
+            sId: "",
+          },
+          fileList: [],
+          viewMsg: [],
+          seeApply: [],
+          ApplyList: [],
+          CidList: [],
+          courseList: [],
+          review_s: "",
+          review_r: "",
+          followUpData: "",
+          Training_show: false,
+          teacher_show: false,
+          mentor_show: false,
+          graduate_show: false,
+          subjectHead: false,
+          searchNewCity: false,
+        },
+        mounted() {
+          _app = this;
+          this.applyView();
+          
+          this.getDeclareList();
+          this.getApplyList();
+          this.getTitle();
+          let request = new Object();
+          request = this.getTitle();
+          let identity = request["identity"];
+          if (identity == 1) {
+            this.graduate_show = true;
+          }
+        },
+        methods: {
+            getStudyList(){
+                let request = new Object();
+              request = this.getTitle();
+              let identity = request["identity"];
+              let uid = request["uid"];
+            let param = new URLSearchParams();
+            param.append("tId", uid);
+            axios
+              .post("../mentor/xueShu/findsId", param)
+              .then((res) => {
+                  console.log(res);
+                this.seeApply = res.data.object;
+              })
+              .catch((err) => {
+                this.$message.error(err.data.message);
+              });
+            },
+            handleFile() {
+            // this.form_1.xrProve = file;
+            
+                let param = new FormData();
+            param.append("file", this.fileList[0].raw);
+            axios({
+  method: 'post',
+  url: '../xsReport/upload',
+  data:param,
+  headers:{
+    "Content-Type":'multipart/form-data'
+  }}).then((res)=>{
+    this.form_1.xrProve = res.data;
+
+  })
+            
+          },
+          handleChange(file, fileList) {
+              this.fileList = fileList
+          },
+          handleRemove(file, fileList) {
+            console.log(file, fileList);
+          },
+          handlePreview(file) {
+            console.log(file);
+            this.form_1.xrProve = file;
+          },
+          handleExceed(files, fileList) {
+            this.$message.warning(
+              `当前限制选择 1 个文件，本次选择了 ${
+                files.length
+              } 个文件，共选择了 ${files.length + fileList.length} 个文件`
+            );
+          },
+          beforeRemove(file, fileList) {
+            return this.$confirm(`确定移除 ${file.name}？`);
+          },
+          ApplyReview(row) {
+            this.viewMsg = [];
+            axios
+              .get("../instructor/selectFinalsInfo", {
+                params: {
+                  vId: row.vId,
+                },
+              })
+              .then((res) => {
+                this.viewMsg.push(res.data.object);
+                this.$message({
+                  message: res.data.message,
+                  type: "success",
+                });
+              })
+              .catch((err) => {
+                this.$message.error("获取信息失败");
+              });
+          },
+          subReview(row) {
+            console.log(row);
+            let param = new URLSearchParams();
+            param.append("upd0", this.review_r);
+            param.append("upd1", this.review_s);
+            param.append("sId", row.vId);
+            axios
+              .post(
+                "../instructor/updFinalsInfo",
+                param
+              )
+              .then((res) => {
+                this.review_r = "";
+                this.review_s = "";
+                this.$message({
+                  message: res.data.message,
+                  type: "success",
+                });
+              })
+              .catch((err) => {
+                this.$message.error("获取信息失败");
+              });
+          },
+          seeApplyReview(row) {},
+          view(row) {
+            this.viewMsg = [];
+            this.viewMsg[0] = row
+          },
+          handle(name) {
+            if (name.index == 1) {
+              this.applyView();
+            }
+          },
+          followUpSub() {
+            if (this.text == "") {
+              this.$message.error("输入框不能为空");
+            } else {
+              let param = new URLSearchParams();
+              param.append("sId", this.followUpData.vId);
+              param.append("text", this.text);
+              axios
+                .post("../student/updFinals", param)
+                .then((res) => {
+                  this.applyView();
+                  this.text = "";
+                  this.$message({
+                    message: res.data.message,
+                    type: "success",
+                  });
+                })
+                .catch((err) => {
+                  this.$message.error("获取信息失败");
+                });
+            }
+          },
+          followUp(row) {
+            console.log(row);
+            this.followUpData = row;
+            let param = new URLSearchParams();
+            param.append("vId", row.vId);
+            axios
+              .post(
+                "../student/selectFinalsInfo",
+                param
+              )
+              .then((res) => {
+                this.applyView();
+                this.viewMsg[0] = res.data.object;
+              })
+              .catch((err) => {
+                this.$message.error("获取信息失败");
+              });
+          },
+          applyView() {
+            let request = new Object();
+              request = this.getTitle();
+              let identity = request["identity"];
+              let uid = request["uid"];
+            let param = new URLSearchParams();
+            param.append("sId", uid);
+            axios
+              .post("../xsReport/findsId", param)
+              .then((res) => {
+                this.seeApply = res.data.object;
+              })
+              .catch((err) => {
+                this.$message.error(err.data.message);
+              });
+          },
+          getApplyList() {
+            let param = new URLSearchParams();
+            param.append("tId", 3);
+            axios
+              .post("../instructor/select", param)
+              .then((res) => {
+                console.log(res.data.object);
+                this.ApplyList = res.data.object;
+              })
+              .catch((err) => {
+                this.$message.error("获取信息失败");
+              });
+          },
+          applyForReview(row) {
+            console.log(row);
+            let param = new URLSearchParams();
+            param.append("vId", row.vId);
+            axios
+              .post("../instructor/updVol", param)
+              .then((res) => {
+                console.log(res);
+                this.$message({
+                  message: "等待学科负责人确认通过",
+                  type: "success",
+                });
+                this.getApplyList();
+              })
+              .catch((err) => {
+                this.$message.error("提交失败！" + err);
+              });
+          },
+          handleClick(row) {
+            console.log(row);
+          },
+          clickNumup() {
+            this.form_1.xrProve = this.fileList;
+            if (
+              this.form_1.xrId == "" ||
+              this.form_1.xrProve == '' ||
+              this.form_1.xrChina == "" ||
+              this.form_1.xrEnglish == "" ||
+              this.form_1.xrRemark == "" ||
+              this.form_1.ttId == "" ||
+              this.form_1.xeName == "" ||
+              this.form_1.xeCountry == "" ||
+              this.form_1.xeTime == ""
+            ) {
+              console.log(this.form_1);
+              console.log(this.fileList);
+              this.$message.error("提交失败！不能留空");
+            } else {
+              let request = new Object();
+              request = this.getTitle();
+              let identity = request["identity"];
+              let uid = request["uid"];
+              let xr = {
+                xrId: this.form_1.xrId,
+                xrProve: this.form_1.xrProve[0].name,
+                xrChina: this.form_1.xrChina,
+                xrEnglish: this.form_1.xrEnglish,
+                xrRemark: this.form_1.xrRemark,
+                ttId: this.form_1.ttId,
+                xeName: this.form_1.xeName,
+                xeCountry: this.form_1.xeCountry,
+                xeTime: this.form_1.xeTime,
+                sId: uid,
+              };
+
+              axios({
+                method: "post",
+                url: "../xsReport/save",
+                headers: { "content-type": "application/json" },
+                data: JSON.stringify(xr),
+              })
+                .then((res) => {
+                  if (res.data.start == 200) {
+                    this.$message({
+                      message: res.data.message,
+                      type: "success",
+                    });
+                    this.applyView();
+                    this.form_1.xrId == "";
+                    this.form_1.xrProve == "";
+                    this.form_1.fileList == [];
+                    this.form_1.xrChina == "";
+                    this.form_1.xrEnglish == "";
+                    this.form_1.xrRemark == "";
+                    this.form_1.ttId == "";
+                    this.form_1.xeName == "";
+                    this.form_1.xeCountry == "";
+                    this.form_1.xeProvince == "";
+                    this.form_1.xeCity == "";
+                    this.form_1.xeTime == "";
+                    this.form_1.sId == "";
+                  } else {
+                    this.$message.error(res.data.message);
+                  }
+                })
+                .catch((err) => {
+                  this.$message.error(err);
+                });
+            }
+          },
+          getDeclareList() {
+            axios
+              .get("../subjectHead/findList")
+              .then((res) => {
+                console.log(res.data);
+                this.CidList = res.data;
+              });
+          },
+          getTitle() {
+            let url = location.search;
+            let theRequest = new Object();
+            if (url.indexOf("?") != -1) {
+              let str = url.substr(1);
+              strs = str.split("&");
+              for (let i = 0; i < strs.length; i++) {
+                theRequest[strs[i].split("=")[0]] = unescape(
+                  strs[i].split("=")[1]
+                );
+              }
+            }
+            return theRequest;
+          },
+          searchCity(cityName) {
+            _app.cityName = cityName;
+            _app.ifSandCityMsg = true;
+            _app.searchNewCity = true;
+            _app.originalImage = [];
+            _app.originalImageClass = [];
+            setTimeout(() => {
+              axios
+                .get("http://121.43.126.152:8090//city/api/findImage", {
+                  params: {
+                    cityName: cityName,
+                  },
+                })
+                .then((res) => {
+                  _app.searchNewCity = false;
+                  for (let i = 0; i < res.data.length; i++) {
+                    if (res.data[i].imageType == "1") {
+                      _app.originalImage.push(
+                        "data:image/jpeg;base64," + res.data[i].content.data
+                      );
+                      if (_app.originalImage.length == 0) {
+                        _app.showDele = false;
+                      } else {
+                        _app.showDele = true;
+                      }
+                    } else if (res.data[i].imageType == "2") {
+                      _app.originalImageClass.push(
+                        "data:image/jpeg;base64," + res.data[i].content.data
+                      );
+                      if (_app.originalImageClass.length == 0) {
+                        _app.showDeleClass = false;
+                      } else {
+                        _app.showDeleClass = true;
+                      }
+                    }
+                  }
+                  if (_app.originalImage.length !== 0) {
+                    _app.showImg = true;
+                  } else {
+                    _app.showImg = false;
+                  }
+                  if (_app.originalImageClass.length !== 0) {
+                    _app.showClassImg = true;
+                  } else {
+                    _app.showClassImg = false;
+                  }
+                  _app.img_1 = _app.originalImage[0];
+                  _app.img_3 = _app.originalImageClass[0];
+                });
+            }, 400);
+          },
+        },
+        components: {
+          systemHead,
+          searchCity,
+          cityMsg,
+        },
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="zn-CH">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="msapplication-TileColor" content="#D83434" />
+    <link rel="stylesheet" href="./css/animate.min.css" />
+    <link rel="stylesheet" href="./css/element.css" />
+    <link rel="stylesheet" href="./css/style.css" />
+    <title>login</title>
+  </head>
+
+  <body>
+    <div
+      id="app"
+      v-loading="clickSubBeforeLoad"
+      element-loading-text="欢迎登陆！正在为您验证..."
+    >
+      <header>
+        <Login-head></Login-head>
+      </header>
+      <main>
+        <Login-msg @sand-click-sub="loadIndex"></Login-msg>
+      </main>
+      <footer></footer>
+    </div>
+
+    <script src="./js/vue.js"></script>
+    <script src="./js/element-ui.js"></script>
+    <script src="./js/axios.min.js"></script>
+    <script>
+      let LoginHead = {
+        template: `
+            <div class="viewport_login_head animate__animated animate__fadeInDown">
+                <h1>登陆</h1>
+            </div>
+            `,
+      };
+
+      let LoginMsg = {
+        template: `
+                <div class="viewport_login_msg">
+                    <div class="login_msg animate__animated animate__fadeInDown">
+                        <div class="msgBox clearfix">
+                            <div class="msgBoxName fl">用户名</div>
+                            <div class="msgBoxContent fl">
+                                <el-input
+                                    placeholder="请输入用户名..."
+                                    v-model="username"
+                                    clearable>
+                                </el-input>
+                            </div>    
+                        </div>
+                        <div class="msgBox clearfix">
+                            <div class="msgBoxName fl">密码</div>
+                            <div class="msgBoxContent fl">
+                                <el-input
+                                    type="password"
+                                    placeholder="请输入密码..."
+                                    v-model="password"
+                                    clearable>
+                                </el-input>
+                            </div>    
+                        </div>
+                        <div class="btn">
+                            <el-button type="primary" round @click="sub">登陆</el-button>    
+                        </div>    
+                    </div>
+                </div>
+            `,
+        data() {
+          return {
+            username: "",
+            password: "",
+          };
+        },
+        mounted() {
+          _that = this;
+        },
+        methods: {
+          sub() {
+            if (_that.username == "" && _that.password == "") {
+              this.$message.error("请先输入用户名和密码");
+            } else if (_that.username == "") {
+              this.$message.error("用户名不能为空");
+            } else if (_that.password == "") {
+              this.$message.error("密码不能为空");
+            } else {
+              _that.$emit("sand-click-sub", _that.username, _that.password);
+            }
+          },
+        },
+      };
+
+      const app = new Vue({
+        el: "#app",
+        data: {
+          clickSubBeforeLoad: false,
+          permissions:''
+        },
+        components: {
+          LoginHead,
+          LoginMsg,
+        },
+        mounted() {
+          _app = this;
+        },
+        methods: {
+          loadIndex(username, password) {
+            _app.clickSubBeforeLoad = !_app.clickSubBeforeLoad;
+            let param = new URLSearchParams();
+            param.append("uName", username);
+            param.append("uPwd", password);
+            axios
+              .post('../user/login', param)
+              .then((res) => {
+                _app.clickSubBeforeLoad = !_app.clickSubBeforeLoad;
+                if (res.data.start == 200) {
+                  this.$message({
+                    message: "登陆成功!欢迎" + res.data.object.uName,
+                    type: "success",
+                  });
+                  setTimeout(() => {
+                    location.href = "./system.html?identity=" + res.data.object.uRole + "&uid=" + res.data.object.uId;
+                  }, 1000);
+                } else {
+                  this.$message.error("登陆失败！" + res);
+                }
+              })
+              .catch((err) => {
+                _app.clickSubBeforeLoad = !_app.clickSubBeforeLoad;
+                this.$message.error(err);
+              });
+          },
+        },
+      });
+    </script>
+  </body>
+</html>
